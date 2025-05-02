@@ -50,7 +50,7 @@ public class UserService {
         }
     }
 
-    // dentro de UserService
+    
     @Autowired
     private EntityManager entityManager;
 
