@@ -1,36 +1,48 @@
 package com.api.demo.controller;
 
-import com.api.demo.model.Product;
+import com.api.demo.dto.ProductDto;
 import com.api.demo.service.ProductService;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/products")
 public class ProductController {
 
-    @Autowired
-    private ProductService productService;
+    private final ProductService productService;
 
-    @GetMapping
-    public List<Product> getAllProducts() {
-        return productService.getAllProducts();
-    }
-
-    @GetMapping("/{id}")
-    public Optional<Product> getProductById(@PathVariable Long id) {
-        return productService.getProductById(id);
+    public ProductController(ProductService productService) {
+        this.productService = productService;
     }
 
     @PostMapping
-    public Product createProduct(@RequestBody Product product) {
-        return productService.saveProduct(product);
+    @ResponseStatus(HttpStatus.CREATED)
+    public ProductDto createProduct(@RequestBody @Valid ProductDto productDto) {
+        return productService.createProduct(productDto);
+    }
+
+    @GetMapping("/{id}")
+    public ProductDto getProduct(@PathVariable Long id) {
+        return productService.getProduct(id);
+    }
+
+    @GetMapping
+    public List<ProductDto> getAllProducts() {
+        return productService.getAllProducts();
+    }
+
+    @PutMapping("/{id}")
+    public ProductDto updateProduct(@PathVariable Long id, @RequestBody @Valid ProductDto productDto) {
+        return productService.updateProduct(
+            new ProductDto(id, productDto.name(), productDto.price())
+        );
     }
 
     @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteProduct(@PathVariable Long id) {
         productService.deleteProduct(id);
     }
